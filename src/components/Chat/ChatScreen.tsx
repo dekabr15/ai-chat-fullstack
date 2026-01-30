@@ -23,16 +23,14 @@ export function ChatScreen({
   }, [messages, isLoading, error]);
 
   return (
-    <div className="mx-auto w-full max-w-[700px] h-[70vh] max-h-[700px] flex flex-col">
-      {/* HEADER */}
-      <div className="flex justify-start">
+    <div className="flex flex-col h-full">
+      <div className="flex-shrink-0">
         <div className="w-[40px] h-[40px] flex items-center justify-center bg-[#1c4d9a] rounded-xl">
           <MessageCircle className="w-6 h-6 text-white" />
         </div>
       </div>
 
-      {/* CHAT WINDOW */}
-      <div className="flex-1 mt-2 overflow-y-auto no-scrollbar flex flex-col gap-3 pr-2">
+      <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-3 mt-2 pr-2">
         {messages.map((m, i) => (
           <div
             key={i}
@@ -46,7 +44,6 @@ export function ChatScreen({
           </div>
         ))}
 
-        {/* ERROR */}
         {error && (
           <div className="mr-auto bg-red-500/20 text-red-300 px-4 py-2 rounded-xl text-sm">
             {error}
@@ -56,8 +53,7 @@ export function ChatScreen({
         <div ref={bottomRef} />
       </div>
 
-      {/* INPUT */}
-      <div className="mt-auto">
+      <div className="flex-shrink-0 pt-2">
         <ChatInput mode="textarea" onSubmit={onSend} disabled={isLoading} />
       </div>
     </div>

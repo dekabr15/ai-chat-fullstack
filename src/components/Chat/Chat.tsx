@@ -1,3 +1,4 @@
+// Chat.tsx — ВСТАВЬ ЦЕЛИКОМ
 "use client";
 
 import { useState } from "react";
@@ -39,7 +40,6 @@ export function Chat() {
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-
       let assistantText = "";
 
       while (true) {
@@ -65,7 +65,15 @@ export function Chat() {
   };
 
   return (
-    <section className="min-h-screen flex flex-col w-full mx-auto px-2 pt-8 pb-10 sm:px-4 sm:pt-12 sm:pb-14 md:px-6 lg:pt-20 lg:pb-25 sm:max-w-120 md:max-w-160 lg:max-w-225 xl:max-w-280">
+    <section
+      className="
+    h-screen w-full overflow-hidden flex flex-col mx-auto    px-2 pt-3 pb-3
+    sm:px-4 sm:pt-4 sm:pb-4 sm:max-w-120
+    md:px-6 md:pt-6 md:pb-6 md:max-w-160
+    lg:px-6 lg:pt-8 lg:pb-8 lg:max-w-225
+    xl:px-6 xl:pt-10 xl:pb-10 xl:max-w-280
+  "
+    >
       {!isStarted ? (
         <StartScreen onStart={sendMessage} isLoading={isLoading} />
       ) : (

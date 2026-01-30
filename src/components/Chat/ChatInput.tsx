@@ -15,7 +15,6 @@ export function ChatInput({
 }: ChatInputProps) {
   const [value, setValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export function ChatInput({
     if (!SpeechRecognition) return;
 
     const recognition = new SpeechRecognition();
-    recognition.lang = "ru-RU"; // можно поменять на en-US
+    recognition.lang = "ru-RU";
     recognition.interimResults = true;
     recognition.continuous = false;
 
@@ -36,33 +35,23 @@ export function ChatInput({
       const transcript = Array.from(event.results)
         .map((r: any) => r[0].transcript)
         .join("");
-
       setValue(transcript);
     };
 
-    recognition.onend = () => {
-      setIsRecording(false);
-    };
-
+    recognition.onend = () => setIsRecording(false);
     recognitionRef.current = recognition;
   }, []);
 
   const toggleRecording = () => {
-    if (disabled) return;
-    if (!recognitionRef.current) return;
-
-    if (isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-    } else {
-      recognitionRef.current.start();
-      setIsRecording(true);
-    }
+    if (disabled || !recognitionRef.current) return;
+    isRecording
+      ? recognitionRef.current.stop()
+      : recognitionRef.current.start();
+    setIsRecording(!isRecording);
   };
 
   const send = () => {
-    if (disabled) return;
-    if (!value.trim()) return;
+    if (disabled || !value.trim()) return;
     onSubmit?.(value);
     setValue("");
   };
@@ -79,16 +68,13 @@ export function ChatInput({
 
   return (
     <div className="relative w-full lg:max-w-[500px]">
-      {/* MIC */}
       <button
         type="button"
         onClick={toggleRecording}
         className="absolute left-3 bottom-2.5 z-10"
       >
         <Mic
-          className={`w-5 h-5 ${
-            isRecording ? "text-red-400 animate-pulse" : "text-white/60"
-          }`}
+          className={`w-5 h-5 ${isRecording ? "text-red-400 animate-pulse" : "text-white/60"}`}
         />
       </button>
 
@@ -105,21 +91,7 @@ export function ChatInput({
             el.style.height = Math.min(el.scrollHeight, 160) + "px";
           }}
           placeholder="Ask whatever you want!"
-          className="
-            w-full
-            min-h-10
-            max-h-40
-            border-2 border-[#143d7f]
-            rounded-[10px]
-            pl-10 pr-11
-            py-2
-            outline-none
-            bg-transparent
-            text-white
-            resize-none
-            overflow-hidden
-            disabled:opacity-50
-          "
+          className="w-full min-h-10 max-h-40 border-2 border-[#143d7f] rounded-[10px] pl-10 pr-11 py-2 outline-none bg-transparent text-white resize-none overflow-y-auto no-scrollbar disabled:opacity-50"
         />
       ) : (
         <input
@@ -129,36 +101,14 @@ export function ChatInput({
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask whatever you want"
-          className="
-            w-full
-            h-10
-            border-2 border-[#143d7f]
-            rounded-[10px]
-            pl-10 pr-11
-            py-2
-            outline-none
-            bg-transparent
-            text-white
-            disabled:opacity-50
-          "
+          className="w-full h-10 border-2 border-[#143d7f] rounded-[10px] pl-10 pr-11 py-2 outline-none bg-transparent text-white disabled:opacity-50"
         />
       )}
 
       <button
         onClick={send}
         disabled={disabled}
-        className="
-          absolute
-          right-1
-          bottom-1
-          w-9 h-9
-          flex items-center justify-center
-          rounded-lg
-          bg-[#1d4c9a]
-          cursor-pointer
-          disabled:opacity-50
-          disabled:cursor-not-allowed
-        "
+        className="absolute right-1 bottom-1 w-9 h-9 flex items-center justify-center rounded-lg bg-[#1d4c9a] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <ChatButton />
       </button>

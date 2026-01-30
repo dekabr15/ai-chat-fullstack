@@ -10,11 +10,13 @@ body {
 }
 
  
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE, Edge */
-  scrollbar-width: none; /* Firefox */
-}
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  width: 0px;
+  height: 0px;
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
