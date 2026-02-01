@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const runtime = "nodejs";
+
 const schema = z.object({
   messages: z.array(
     z.object({
@@ -9,9 +11,24 @@ const schema = z.object({
   ),
 });
 
+export async function GET() {
+  return Response.json({ ok: true });
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
+
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { messages } = schema.parse(body);
+  const bodyJson = await req.json();
+  const { messages } = schema.parse(bodyJson);
 
   const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -26,7 +43,9 @@ export async function POST(req: Request) {
     }),
   });
 
-  if (!upstream.body) {
+  const upstreamBody = upstream.body;
+
+  if (!upstreamBody) {
     return new Response("No stream", { status: 500 });
   }
 
@@ -35,7 +54,7 @@ export async function POST(req: Request) {
 
   const stream = new ReadableStream({
     async start(controller) {
-      const reader = upstream.body!.getReader();
+      const reader = upstreamBody.getReader();
 
       try {
         while (true) {
@@ -47,16 +66,20 @@ export async function POST(req: Request) {
 
           for (const line of lines) {
             if (!line.startsWith("data:")) continue;
+
             const data = line.replace("data:", "").trim();
             if (data === "[DONE]") continue;
 
             const json = JSON.parse(data);
             const token = json.choices?.[0]?.delta?.content;
-            if (token) controller.enqueue(encoder.encode(token));
+
+            if (token) {
+              controller.enqueue(encoder.encode(token));
+            }
           }
         }
-      } catch (e) {
-        controller.error(e);
+      } catch (error) {
+        controller.error(error);
       } finally {
         controller.close();
       }
