@@ -1,4 +1,3 @@
-// Chat.tsx — ВСТАВЬ ЦЕЛИКОМ
 "use client";
 
 import { useState } from "react";
